@@ -1,7 +1,15 @@
-import React from "react";
-import { Container } from ".";
+import { useState, useEffect } from "react";
+import { Container, FeatureImage, Image } from ".";
+import { IImage, images } from "../constants/image";
 
 const Gallery = () => {
+    // states
+    const [featureImage, setFeatureImage] = useState<IImage>();
+
+    // set feature image
+    useEffect(() => {
+        setFeatureImage(images[0]);
+    }, []);
     return (
         <Container>
             <div className="bg-white rounded-md">
@@ -18,18 +26,12 @@ const Gallery = () => {
                 </div>
                 <hr />
                 <div className="py-4 px-8 grid grid-rows-2 grid-cols-5 gap-4">
-                    <div className="w-full h-full border rounded-md row-span-2 col-span-2"></div>
-                    <div className="w-full h-32 border rounded-md row-span-1 col-span-1"></div>
-                    <div className="w-full h-32 border rounded-md row-span-1 col-span-1"></div>
-                    <div className="w-full h-32 border rounded-md row-span-1 col-span-1"></div>
-                    <div className="w-full h-32 border rounded-md row-span-1 col-span-1"></div>
-                    <div className="w-full h-32 border rounded-md row-span-1 col-span-1"></div>
-                    <div className="w-full h-32 border rounded-md row-span-1 col-span-1"></div>
-                    <div className="w-full h-32 border rounded-md row-span-1 col-span-1"></div>
-                    <div className="w-full h-32 border rounded-md row-span-1 col-span-1"></div>
-                    <div className="w-full h-32 border rounded-md row-span-1 col-span-1"></div>
-                    <div className="w-full h-32 border rounded-md row-span-1 col-span-1"></div>
-                    <div className="w-full h-32 border rounded-md row-span-1 col-span-1"></div>
+                    <FeatureImage image={featureImage} />
+                    {images
+                        .filter((image) => image.id !== featureImage?.id)
+                        .map((image) => (
+                            <Image key={image.id} image={image} />
+                        ))}
                 </div>
             </div>
         </Container>

@@ -10,16 +10,54 @@ import img_9 from "../assets/images/image-9.webp";
 import img_10 from "../assets/images/image-10.jpeg";
 import img_11 from "../assets/images/image-11.jpeg";
 
-export default {
-    img_1,
-    img_2,
-    img_3,
-    img_4,
-    img_5,
-    img_6,
-    img_7,
-    img_8,
-    img_9,
-    img_10,
-    img_11,
-};
+export const images = [
+    {
+        id: 1,
+        link: img_1,
+    },
+    {
+        id: 2,
+        link: img_2,
+    },
+    {
+        id: 3,
+        link: img_3,
+    },
+    {
+        id: 4,
+        link: img_4,
+    },
+    {
+        id: 5,
+        link: img_5,
+    },
+    {
+        id: 6,
+        link: img_6,
+    },
+    {
+        id: 7,
+        link: img_7,
+    },
+    {
+        id: 8,
+        link: img_8,
+    },
+    {
+        id: 9,
+        link: img_9,
+    },
+    {
+        id: 10,
+        link: img_10,
+    },
+    {
+        id: 11,
+        link: img_11,
+    },
+];
+
+export interface IImage {
+    id: number;
+    link: string;
+}
