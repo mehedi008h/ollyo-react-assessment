@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, FeatureImage, Image } from ".";
+import { Container, FeatureImage, Image, UploadImage } from ".";
 import { IImage, images } from "../constants/image";
 
 const Gallery = () => {
@@ -30,6 +30,26 @@ const Gallery = () => {
         setSelectedImages([]);
         // set new features images from gallery very first image
         setFeatureImage(gallery && gallery[0]);
+    };
+
+    // handle upload photo
+    const handleUploadImage = (e: any) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            if (reader.readyState === 2) {
+                gallery &&
+                    setGallery([
+                        ...gallery,
+                        {
+                            id: gallery.length + 1,
+                            link: reader.result as string,
+                        },
+                    ]);
+            }
+        };
+
+        reader.readAsDataURL(e.target.files[0]);
     };
 
     // set feature image
@@ -91,6 +111,8 @@ const Gallery = () => {
                                     selectedImages={selectedImages}
                                 />
                             ))}
+                    {/* upload image */}
+                    <UploadImage handleUploadImage={handleUploadImage} />
                 </div>
             </div>
         </Container>
