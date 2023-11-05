@@ -1,12 +1,26 @@
-import { useState, useEffect } from "react";
-import { Container, FeatureImage, Image, UploadImage } from ".";
+import { useState, useEffect, useCallback } from "react";
+import { Container, Image, UploadImage } from ".";
 import { IImage, images } from "../constants/image";
+import update from "immutability-helper";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 const Gallery = () => {
     // states
-    const [gallery, setGallery] = useState<IImage[]>();
-    const [featureImage, setFeatureImage] = useState<IImage>();
+    const [gallery, setGallery] = useState<IImage[]>([]);
     const [selectedImages, setSelectedImages] = useState<number[]>([]);
+
+    // handle move images
+    const moveCard = useCallback((dragIndex: number, hoverIndex: number) => {
+        setGallery((prevCards: IImage[]) =>
+            update(prevCards, {
+                $splice: [
+                    [dragIndex, 1],
+                    [hoverIndex, 0, prevCards[dragIndex] as IImage],
+                ],
+            })
+        );
+    }, []);
 
     // handle selected images
     const handleSelectedImage = (id: number) => {
@@ -28,8 +42,6 @@ const Gallery = () => {
 
         // after deleting selected images remove all selected images
         setSelectedImages([]);
-        // set new features images from gallery very first image
-        setFeatureImage(gallery && gallery[0]);
     };
 
     // handle upload photo
@@ -52,15 +64,27 @@ const Gallery = () => {
         reader.readAsDataURL(e.target.files[0]);
     };
 
-    // set feature image
+    // render images
+    const renderCard = useCallback(
+        (image: { id: number; link: string }, index: number) => {
+            return (
+                <Image
+                    key={image.id}
+                    image={image}
+                    handleSelectedImage={handleSelectedImage}
+                    selectedImages={selectedImages}
+                    moveCard={moveCard}
+                    index={index}
+                />
+            );
+        },
+        [handleSelectedImage, selectedImages, moveCard]
+    );
+
+    // set gallery images
     useEffect(() => {
         setGallery(images);
     }, []);
-
-    // set feature image
-    useEffect(() => {
-        setFeatureImage(gallery && gallery[0]);
-    }, [gallery]);
     return (
         <Container>
             <div className="bg-white rounded-md">
@@ -71,7 +95,7 @@ const Gallery = () => {
                             <input
                                 type="checkbox"
                                 className="h-5 w-5"
-                                checked={true}
+                                defaultChecked={true}
                             />
                             <h3 className="text-black font-semibold text-xl">
                                 {selectedImages?.length} File Selected
@@ -93,27 +117,18 @@ const Gallery = () => {
                     )}
                 </div>
                 <hr />
-                {/* gallery images  */}
-                <div className="py-4 xl:px-8 lg:px-8 md:px-8 px-4 grid grid-rows-3 xl:grid-cols-5 lg:grid-cols-5 md:grid-cols-5 grid-cols-2  gap-4">
-                    <FeatureImage
-                        image={featureImage}
-                        handleSelectedImage={handleSelectedImage}
-                        selectedImages={selectedImages}
-                    />
-                    {gallery &&
-                        gallery
-                            .filter((image) => image.id !== featureImage?.id)
-                            .map((image) => (
-                                <Image
-                                    key={image.id}
-                                    image={image}
-                                    handleSelectedImage={handleSelectedImage}
-                                    selectedImages={selectedImages}
-                                />
-                            ))}
-                    {/* upload image */}
-                    <UploadImage handleUploadImage={handleUploadImage} />
-                </div>
+                {/* dragable area  */}
+                <DndProvider backend={HTML5Backend}>
+                    {/* gallery images  */}
+                    <div className="py-4 xl:px-8 lg:px-8 md:px-8 px-4 grid grid-rows-3 xl:grid-cols-5 lg:grid-cols-5 md:grid-cols-5 grid-cols-2  gap-4">
+                        {gallery &&
+                            gallery.map((image, index) =>
+                                renderCard(image, index)
+                            )}
+                        {/* upload image */}
+                        <UploadImage handleUploadImage={handleUploadImage} />
+                    </div>
+                </DndProvider>
             </div>
         </Container>
     );
